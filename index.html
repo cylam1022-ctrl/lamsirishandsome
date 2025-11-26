@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古文重點字詞解釋複習（選擇題）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微軟正黑體", "宋體", sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #e6f7ff;
+            padding-bottom: 10px;
+        }
+        /* 篇目選擇 */
+        .text-select {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .text-select label {
+            font-size: 16px;
+            color: #34495e;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .text-select select {
+            padding: 8px 12px;
+            font-size: 16px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            background: #f9f9f9;
+            cursor: pointer;
+        }
+        /* 題目區域 */
+        .question-box {
+            padding: 20px;
+            background: #f0f9ff;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .question-title {
+            font-size: 18px;
+            color: #2980b9;
+            margin-bottom: 15px;
+        }
+        .word-box {
+            font-size: 20px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+        .context-box {
+            font-size: 14px;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+        /* 選擇題選項 */
+        .options-box {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 500px;
+            margin: 0 auto 20px;
+        }
+        .option-btn {
+            padding: 15px 20px;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s;
+        }
+        .option-btn:hover {
+            border-color: #3498db;
+            background: #f8fbff;
+        }
+        .option-btn.correct {
+            background: #e8f5e9;
+            border-color: #2e7d32;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .option-btn.wrong {
+            background: #ffebee;
+            border-color: #c62828;
+            color: #c62828;
+        }
+        /* 反饋區域 */
+        .feedback-box {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            line-height: 1.8;
+            background: #fafafa;
+            border: 1px solid #e0e0e0;
+        }
+        /* 控制按鈕 */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .next-btn {
+            background: #4caf50;
+            color: white;
+        }
+        .reset-btn {
+            background: #f44336;
+            color: white;
+        }
+        .reset-practice-btn {
+            background: #ff9800;
+            color: white;
+        }
+        /* 統計區域 */
+        .stats-box {
+            text-align: center;
+            padding: 15px;
+            background: #fafafa;
+            border-radius: 8px;
+            color: #666;
+            font-size: 15px;
+        }
+        .stats-box span {
+            color: #2980b9;
+            font-weight: bold;
+        }
+        /* 題庫耗盡提示 */
+        .empty-tip {
+            text-align: center;
+            font-size: 18px;
+            color: #9c27b0;
+            padding: 20px;
+            display: none;
+        }
+        /* 禁用按鈕樣式 */
+        .disabled {
+            pointer-events: none;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>古文重點字詞解釋複習（選擇題）</h1>
+
+        <!-- 篇目選擇 -->
+        <div class="text-select">
+            <label for="textSelect">選擇篇目：</label>
+            <select id="textSelect" onchange="changeText()">
+                <option value="shishuo">《師說》</option>
+                <option value="yueyanglouji">《岳陽樓記》</option>
+                <option value="shisanshou">《詩三首》（山居秋暝/月下獨酌/登樓）</option>
+                <option value="liuguolun">《六國論》</option>
+                <option value="cisanshou">《詞三首》（念奴嬌/聲聲慢/青玉案）</option>
+            </select>
+        </div>
+
+        <!-- 題目區域 -->
+        <div class="question-box" id="questionBox">
+            <div class="question-title">請選擇下列字詞的正確解釋：</div>
+            <div class="word-box" id="currentWord">加載中...</div>
+            <div class="context-box" id="wordContext">上下文：-</div>
+            
+            <!-- 選擇題選項 -->
+            <div class="options-box" id="optionsBox">
+                <!-- 選項由JS動態生成 -->
+            </div>
+        </div>
+
+        <!-- 題庫耗盡提示 -->
+        <div class="empty-tip" id="emptyTip">
+            ✨ 本輪練習字詞已全部答完！點擊「重置練習題庫」可重新開始
+        </div>
+
+        <!-- 反饋區域 -->
+        <div class="feedback-box" id="feedbackBox"></div>
+
+        <!-- 控制按鈕 -->
+        <div class="btn-group">
+            <button class="control-btn next-btn" onclick="nextWord()">下一個字詞</button>
+            <button class="control-btn reset-btn" onclick="resetStats()">重置答題記錄</button>
+            <button class="control-btn reset-practice-btn" onclick="resetPractice()">重置練習題庫</button>
+        </div>
+
+        <!-- 統計區域 -->
+        <div class="stats-box">
+            總答題數：<span id="totalCount">0</span> | 
+            正確數：<span id="correctCount">0</span> | 
+            正確率：<span id="accuracy">0%</span>
+        </div>
+    </div>
+
+    <script>
+        // 核心題庫：修正後的篇目 + EDB標準釋義 + 干擾項
+        const wordBank = {
+            // 《師說》（韓愈）
+            shishuo: [
+                {
+                    word: "師",
+                    context: "古之學者必有師（《師說》）",
+                    answer: "老師",
+                    distractors: ["軍隊", "學習"],
+                    analysis: "此處「師」為名詞，指傳授知識、道理的人，是《師說》核心實詞之一。"
+                },
+                {
+                    word: "所以",
+                    context: "師者，所以傳道受業解惑也（《師說》）",
+                    answer: "用來……的（憑藉）",
+                    distractors: ["因此", "原因"],
+                    analysis: "「所以」為固定結構，表憑藉/目的，並非現代漢語的「因此」。"
+                },
+                {
+                    word: "道",
+                    context: "傳道受業解惑也（《師說》）",
+                    answer: "道理、聖人之道",
+                    distractors: ["道路", "說話"],
+                    analysis: "指儒家的修身、治國、平天下的道理與準則。"
+                },
+                {
+                    word: "惑",
+                    context: "惑而不從師，其為惑也，終不解矣（《師說》）",
+                    answer: "疑惑、疑難問題",
+                    distractors: ["迷惑他人", "煩惱"],
+                    analysis: "前一個「惑」是動詞（有疑惑），後一個是名詞（疑惑的問題）。"
+                },
+                {
+                    word: "從",
+                    context: "惑而不從師（《師說》）",
+                    answer: "跟從、請教",
+                    distractors: ["從前", "服從"],
+                    analysis: "此處為動詞，指跟隨老師學習以解決疑惑。"
+                },
+                {
+                    word: "傳",
+                    context: "傳道受業解惑也（《師說》）",
+                    answer: "傳授、傳播",
+                    distractors: ["傳記", "轉移"],
+                    analysis: "動詞，指將聖人之道傳授給學生。"
+                },
+                {
+                    word: "業",
+                    context: "傳道受業解惑也（《師說》）",
+                    answer: "學業、技藝",
+                    distractors: ["事業", "行業"],
+                    analysis: "指學生需學習的知識與技能。"
+                },
+                {
+                    word: "聖",
+                    context: "是故聖益聖，愚益愚（《師說》）",
+                    answer: "聖人、聖明的人",
+                    distractors: ["神聖", "聰明"],
+                    analysis: "前一個「聖」指名詞（聖人），後一個為形容詞（聖明）。"
+                },
+                {
+                    word: "愚",
+                    context: "是故聖益聖，愚益愚（《師說》）",
+                    answer: "愚人、愚昧的人",
+                    distractors: ["愚蠢的行為", "欺騙"],
+                    analysis: "前一個「愚」指名詞（愚人），後一個為形容詞（愚昧）。"
+                },
+                {
+                    word: "聞",
+                    context: "聞道有先後，術業有專攻（《師說》）",
+                    answer: "聽到、領悟",
+                    distractors: ["聞名", "嗅覺"],
+                    analysis: "指領悟聖人之道有早有晚。"
+                }
+            ],
+            // 《岳陽樓記》（范仲淹）
+            yueyanglouji: [
+                {
+                    word: "謫",
+                    context: "滕子京謫守巴陵郡（《岳陽樓記》）",
+                    answer: "貶謫、降職",
+                    distractors: ["調任", "升官"],
+                    analysis: "指古代官員因過失被降職並派往外地。"
+                },
+                {
+                    word: "勝",
+                    context: "予觀夫巴陵勝狀（《岳陽樓記》）",
+                    answer: "優美的、壯麗的",
+                    distractors: ["勝利", "超過"],
+                    analysis: "「勝狀」指優美的景色，「勝」此處為形容詞。"
+                },
+                {
+                    word: "際",
+                    context: "浩浩湯湯，橫無際涯（《岳陽樓記》）",
+                    answer: "邊際、界限",
+                    distractors: ["時際", "交際"],
+                    analysis: "「際涯」同義連用，均指邊界，形容洞庭湖水域遼闊。"
+                },
+                {
+                    word: "求",
+                    context: "予嘗求古仁人之心（《岳陽樓記》）",
+                    answer: "探求、探究",
+                    distractors: ["請求", "尋找"],
+                    analysis: "指作者探求古代品德高尚之人的思想境界。"
+                },
+                {
+                    word: "歸",
+                    context: "微斯人，吾誰與歸（《岳陽樓記》）",
+                    answer: "歸向、歸附",
+                    distractors: ["回家", "歸還"],
+                    analysis: "此處為引申義，指志同道合、一同追求理想。"
+                },
+                {
+                    word: "霽",
+                    context: "若夫淫雨霏霏，連月不開；春和景明（《岳陽樓記》）",
+                    answer: "雨過天晴",
+                    distractors: ["下雨", "霧氣"],
+                    analysis: "「春和景明」前常接「霽」，指天氣放晴。"
+                },
+                {
+                    word: "景",
+                    context: "春和景明（《岳陽樓記》）",
+                    answer: "日光、陽光",
+                    distractors: ["景色", "景象"],
+                    analysis: "非現代漢語的「景色」，指春日陽光明媚。"
+                },
+                {
+                    word: "極",
+                    context: "此樂何極（《岳陽樓記》）",
+                    answer: "窮盡、盡頭",
+                    distractors: ["非常", "頂點"],
+                    analysis: "指歡樂沒有窮盡。"
+                },
+                {
+                    word: "偕",
+                    context: "寵辱偕忘（《岳陽樓記》）",
+                    answer: "一起、都",
+                    distractors: ["和諧", "帶着"],
+                    analysis: "指榮寵與屈辱都一並忘卻。"
+                },
+                {
+                    word: "微",
+                    context: "微斯人，吾誰與歸（《岳陽樓記》）",
+                    answer: "如果沒有、假如沒有",
+                    distractors: ["微小", "輕微"],
+                    analysis: "表假設，指若沒有這樣的人，我與誰同道。"
+                }
+            ],
+            // 《詩三首》（山居秋暝/月下獨酌/登樓）
+            shisanshou: [
+                {
+                    word: "暝",
+                    context: "空山新雨後，天氣晚來秋。明月松間照，清泉石上流（《山居秋暝》）",
+                    answer: "傍晚、夜色",
+                    distractors: ["黎明", "昏暗"],
+                    analysis: "《山居秋暝》的「暝」指傍晚，點明詩作的時間背景。"
+                },
+                {
+                    word: "酌",
+                    context: "天若不愛酒，酒星不在天。地若不愛酒，地應無酒泉（《月下獨酌》）",
+                    answer: "飲酒、斟酒",
+                    distractors: ["考慮", "舀水"],
+                    analysis: "《月下獨酌》的「酌」指飲酒，體現詩人獨飲的情境。"
+                },
+                {
+                    word: "依",
+                    context: "花近高樓傷客心，萬方多難此登臨。锦江春色來天地，玉壘浮雲變古今（《登樓》）",
+                    answer: "依託、依靠",
+                    distractors: ["依舊", "靠近"],
+                    analysis: "《登樓》中「依」指國家安危依託於山河，表達憂國之情。"
+                },
+                {
+                    word: "閒",
+                    context: "竹喧歸浣女，蓮動下漁舟。隨意春芳歇，王孫自可留（《山居秋暝》）",
+                    answer: "閒適、清閒",
+                    distractors: ["空閒", "無聊"],
+                    analysis: "「閒」體現詩中田園生活的清閒與自在。"
+                },
+                {
+                    word: "獨",
+                    context: "舉杯邀明月，對影成三人（《月下獨酌》）",
+                    answer: "獨自、單獨",
+                    distractors: ["孤獨", "唯一"],
+                    analysis: "「獨酌」指獨自飲酒，突出詩人的孤高與曠達。"
+                },
+                {
+                    word: "傷",
+                    context: "花近高樓傷客心，萬方多難此登臨（《登樓》）",
+                    answer: "觸傷、悲傷",
+                    distractors: ["受傷", "損害"],
+                    analysis: "「傷客心」指觸動遊子的悲傷之情，體現詩人的憂國思鄉。"
+                },
+                {
+                    word: "歇",
+                    context: "隨意春芳歇，王孫自可留（《山居秋暝》）",
+                    answer: "消散、逝去",
+                    distractors: ["休息", "停止"],
+                    analysis: "「春芳歇」指春日的芳菲消散，暗喻時光流逝。"
+                },
+                {
+                    word: "邀",
+                    context: "舉杯邀明月，對影成三人（《月下獨酌》）",
+                    answer: "邀請",
+                    distractors: ["邀約", "攔截"],
+                    analysis: "擬人手法，將明月視為邀請的對象，體現詩人的浪漫。"
+                },
+                {
+                    word: "臨",
+                    context: "萬方多難此登臨（《登樓》）",
+                    answer: "登臨、到達",
+                    distractors: ["面臨", "靠近"],
+                    analysis: "「登臨」指登上高樓遠望，是古詩常見的抒懷場景。"
+                },
+                {
+                    word: "留",
+                    context: "隨意春芳歇，王孫自可留（《山居秋暝》）",
+                    answer: "停留、居留",
+                    distractors: ["留下", "保留"],
+                    analysis: "「留」體現詩人對田園生活的嚮往，不願歸返官場。"
+                }
+            ],
+            // 《六國論》（蘇洵）
+            liuguolun: [
+                {
+                    word: "弊",
+                    context: "弊在賂秦（《六國論》）",
+                    answer: "弊病、弊端",
+                    distractors: ["壞處", "欺騙"],
+                    analysis: "指六國滅亡的根本問題在於向秦國割地求和。"
+                },
+                {
+                    word: "賂",
+                    context: "賂秦而力虧，滅亡之道也（《六國論》）",
+                    answer: "賄賂、割地求和",
+                    distractors: ["贈送", "行賄"],
+                    analysis: "指六國以土地贈予秦國，換取暫時的安寧。"
+                },
+                {
+                    word: "兵",
+                    context: "非兵不利，戰不善（《六國論》）",
+                    answer: "兵器、武器",
+                    distractors: ["軍隊", "士兵"],
+                    analysis: "此處「兵」為名詞，並非「軍隊」，強調六國滅亡非因武器落後。"
+                },
+                {
+                    word: "亡",
+                    context: "諸侯之所亡，與戰敗而亡者（《六國論》）",
+                    answer: "喪失、失去（土地）",
+                    distractors: ["滅亡", "死亡"],
+                    analysis: "動詞，指六國因賂秦喪失的土地，遠超戰敗丟失的土地。"
+                },
+                {
+                    word: "速",
+                    context: "至丹以荊卿為計，始速禍焉（《六國論》）",
+                    answer: "招致、加速",
+                    distractors: ["快速", "速度"],
+                    analysis: "指燕太子丹派荊軻刺秦，反而招致了滅亡的災禍。"
+                },
+                {
+                    word: "殆",
+                    context: "且燕趙處秦革滅殆盡之際（《六國論》）",
+                    answer: "幾乎、差不多",
+                    distractors: ["危殆", "大概"],
+                    analysis: "指燕、趙兩國處在秦國幾乎消滅其他諸侯國的時候。"
+                },
+                {
+                    word: "劫",
+                    context: "為秦人積威之所劫（《六國論》）",
+                    answer: "脅迫、挾持",
+                    distractors: ["搶劫", "劫持"],
+                    analysis: "指六國被秦國長期積累的威勢所脅迫。"
+                },
+                {
+                    word: "判",
+                    context: "故不戰而強弱勝負已判矣（《六國論》）",
+                    answer: "判定、分曉",
+                    distractors: ["判斷", "判刑"],
+                    analysis: "指不用交戰，強弱勝負的結果已經確定。"
+                },
+                {
+                    word: "數",
+                    context: "今日割五城，明日割十城（《六國論》）",
+                    answer: "數目、幾次",
+                    distractors: ["數字", "計算"],
+                    analysis: "「數」在此處指割地的次數，表多次割地求和。"
+                },
+                {
+                    word: "厭",
+                    context: "暴秦之欲無厭（《六國論》）",
+                    answer: "滿足",
+                    distractors: ["討厭", "厭煩"],
+                    analysis: "同「饜」，指秦國的貪欲沒有滿足的時候。"
+                }
+            ],
+            // 《詞三首》（念奴嬌·赤壁懷古/聲聲慢·秋情/青玉案·元夕）
+            cisanshou: [
+                {
+                    word: "故壘",
+                    context: "故壘西邊，人道是，三國周郎赤壁（《念奴嬌·赤壁懷古》）",
+                    answer: "舊時的營壘",
+                    distractors: ["舊房子", "過去的堡壘"],
+                    analysis: "指赤壁之戰遺留的舊營壘，營造懷古氛圍。"
+                },
+                {
+                    word: "風流",
+                    context: "千古風流人物（《念奴嬌·赤壁懷古》）",
+                    answer: "傑出的、有才華的",
+                    distractors: ["風流倜儻", "風光"],
+                    analysis: "指歷史上建功立業的英雄人物。"
+                },
+                {
+                    word: "戚戚",
+                    context: "尋尋覓覓，冷冷清清，淒淒慘慘戚戚（《聲聲慢·秋情》）",
+                    answer: "憂愁、悲傷的樣子",
+                    distractors: ["哀傷", "痛苦"],
+                    analysis: "疊詞，層層遞進表達作者的孤寂與愁苦。"
+                },
+                {
+                    word: "燈",
+                    context: "東風夜放花千樹，更吹落、星如雨（《青玉案·元夕》）",
+                    answer: "燈燭、燈火",
+                    distractors: ["燈光", "燈籠"],
+                    analysis: "「花千樹」比喻燈火繁多，描寫元宵節的熱鬧場景。"
+                },
+                {
+                    word: "酹",
+                    context: "人生如夢，一尊還酹江月（《念奴嬌·赤壁懷古》）",
+                    answer: "以酒澆地祭奠",
+                    distractors: ["飲酒", "澆灌"],
+                    analysis: "指作者以酒祭月，抒發人生感慨。"
+                },
+                {
+                    word: "次第",
+                    context: "這次第，怎一個愁字了得（《聲聲慢·秋情》）",
+                    answer: "光景、情形",
+                    distractors: ["順序", "次數"],
+                    analysis: "指當下的處境與心情，非「順序」之意。"
+                },
+                {
+                    word: "尋覓",
+                    context: "尋尋覓覓（《聲聲慢·秋情》）",
+                    answer: "尋找、探求",
+                    distractors: ["摸索", "尋思"],
+                    analysis: "疊詞強調作者對歸宿、慰藉的尋找。"
+                },
+                {
+                    word: "驚",
+                    context: "羽扇綸巾，談笑間、強虜灰飛煙滅（《念奴嬌·赤壁懷古》）",
+                    answer: "驚駭、擊敗",
+                    distractors: ["吃驚", "驚嚇"],
+                    analysis: "指曹操的軍隊被輕鬆擊敗，體現周瑜的英氣。"
+                },
+                {
+                    word: "暗",
+                    context: "眾裡尋他千百度，驀然回首，那人卻在，燈火闌珊處（《青玉案·元夕》）",
+                    answer: "昏暗、暗淡",
+                    distractors: ["黑暗", "隱藏"],
+                    analysis: "「燈火闌珊」指燈火稀疏暗淡，對比元宵熱鬧與主人公的孤高。"
+                },
+                {
+                    word: "愁",
+                    context: "怎一個愁字了得（《聲聲慢·秋情》）",
+                    answer: "愁苦、憂愁",
+                    distractors: ["悲傷", "煩惱"],
+                    analysis: "一字收束全詞，概括作者國破家亡、孤苦無依的複雜愁緒。"
+                }
+            ]
+        };
+
+        // 全局變量
+        let currentText = "shishuo"; // 默認選中《師說》
+        let currentWordData = null; // 當前字詞數據
+        let answeredWords = []; // 已答過的字詞
+        let remainingWords = []; // 剩餘未答字詞
+        let stats = {
+            total: 0,
+            correct: 0
+        };
+        let isAnswered = false; // 當前題目是否已答
+
+        // 初始化
+        window.onload = function() {
+            loadStats();
+            initRemainingWords();
+            nextWord();
+        };
+
+        // 初始化剩餘題庫
+        function initRemainingWords() {
+            remainingWords = JSON.parse(JSON.stringify(wordBank[currentText]));
+            answeredWords = [];
+            isAnswered = false;
+            document.getElementById("questionBox").style.display = "block";
+            document.getElementById("emptyTip").style.display = "none";
+        }
+
+        // 切換篇目
+        function changeText() {
+            currentText = document.getElementById("textSelect").value;
+            initRemainingWords();
+            nextWord();
+        }
+
+        // 加載隨機不重複字詞 + 生成選擇題選項
+        function nextWord() {
+            // 重置狀態
+            isAnswered = false;
+            document.getElementById("feedbackBox").style.display = "none";
+            
+            // 判斷是否有剩餘字詞
+            if (remainingWords.length === 0) {
+                document.getElementById("questionBox").style.display = "none";
+                document.getElementById("emptyTip").style.display = "block";
+                return;
+            }
+
+            // 隨機選取字詞
+            const randomIndex = Math.floor(Math.random() * remainingWords.length);
+            currentWordData = remainingWords[randomIndex];
+            answeredWords.push(currentWordData);
+            remainingWords.splice(randomIndex, 1);
+
+            // 渲染字詞和上下文
+            document.getElementById("currentWord").innerText = currentWordData.word;
+            document.getElementById("wordContext").innerText = `上下文：${currentWordData.context}`;
+
+            // 生成隨機選項（1正確+2干擾項，隨機排序）
+            generateOptions();
+        }
+
+        // 生成選擇題選項
+        function generateOptions() {
+            const optionsBox = document.getElementById("optionsBox");
+            optionsBox.innerHTML = ""; // 清空舊選項
+
+            // 組合選項：正確答案 + 兩個干擾項
+            const allOptions = [
+                { text: currentWordData.answer, isCorrect: true },
+                { text: currentWordData.distractors[0], isCorrect: false },
+                { text: currentWordData.distractors[1], isCorrect: false }
+            ];
+
+            // 隨機排序選項
+            allOptions.sort(() => Math.random() - 0.5);
+
+            // 創建選項按鈕
+            allOptions.forEach((option, index) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = `${String.fromCharCode(65 + index)}. ${option.text}`; // A/B/C選項
+                btn.dataset.correct = option.isCorrect;
+                
+                // 點擊選項提交答案
+                btn.onclick = function() {
+                    if (isAnswered) return; // 已答過則禁用
+                    submitAnswer(this);
+                };
+
+                optionsBox.appendChild(btn);
+            });
+        }
+
+        // 提交答案（點擊選項）
+        function submitAnswer(clickedBtn) {
+            isAnswered = true;
+            const allOptions = document.querySelectorAll(".option-btn");
+            const feedbackBox = document.getElementById("feedbackBox");
+
+            // 標記正確/錯誤選項
+            allOptions.forEach(btn => {
+                if (btn.dataset.correct === "true") {
+                    btn.classList.add("correct");
+                } else if (btn === clickedBtn) {
+                    btn.classList.add("wrong");
+                }
+                btn.classList.add("disabled"); // 禁用所有選項
+            });
+
+            // 判斷是否正確
+            const isCorrect = clickedBtn.dataset.correct === "true";
+            if (isCorrect) {
+                stats.correct++;
+            }
+            stats.total++;
+
+            // 顯示反饋
+            feedbackBox.style.display = "block";
+            feedbackBox.innerHTML = `
+                <p><strong>解析：</strong>${currentWordData.analysis}</p>
+                <p><strong>正確答案：</strong>${currentWordData.answer}</p>
+            `;
+
+            // 更新統計
+            saveStats();
+            updateStatsDisplay();
+        }
+
+        // 保存統計數據
+        function saveStats() {
+            localStorage.setItem("wordPracticeStats", JSON.stringify(stats));
+        }
+
+        // 加載統計數據
+        function loadStats() {
+            const savedStats = localStorage.getItem("wordPracticeStats");
+            if (savedStats) {
+                stats = JSON.parse(savedStats);
+                updateStatsDisplay();
+            }
+        }
+
+        // 更新統計顯示
+        function updateStatsDisplay() {
+            const totalCount = document.getElementById("totalCount");
+            const correctCount = document.getElementById("correctCount");
+            const accuracy = document.getElementById("accuracy");
+            
+            totalCount.innerText = stats.total;
+            correctCount.innerText = stats.correct;
+            const accRate = stats.total === 0 ? 0 : (stats.correct / stats.total * 100).toFixed(1);
+            accuracy.innerText = `${accRate}%`;
+        }
+
+        // 重置答題記錄
+        function resetStats() {
+            if (confirm("確定要重置所有答題記錄嗎？")) {
+                stats = { total: 0, correct: 0 };
+                saveStats();
+                updateStatsDisplay();
+            }
+        }
+
+        // 重置練習題庫
+        function resetPractice() {
+            initRemainingWords();
+            nextWord();
+        }
+    </script>
+</body>
+</html>
